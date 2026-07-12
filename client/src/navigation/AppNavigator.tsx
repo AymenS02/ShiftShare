@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
 import BottomTabs from "./BottomTabs";
+import CompanySetupScreen from "../screens/CompanySetupScreen";
 
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
@@ -16,7 +17,8 @@ export default function AppNavigator() {
 
   const {
     token,
-    isLoading
+    isLoading,
+    user,
   } = useContext(AuthContext);
 
 
@@ -38,13 +40,18 @@ export default function AppNavigator() {
       >
 
         {
-          token ? (
+          token && user ? (
 
-            // User is logged in
-            <Stack.Screen
-              name="Main"
-              component={BottomTabs}
-            />
+            user.companyId ? (
+              <Stack.Screen name="Main">
+                {() => <BottomTabs role={user.role} />}
+              </Stack.Screen>
+            ) : (
+              <Stack.Screen
+                name="CompanySetup"
+                component={CompanySetupScreen}
+              />
+            )
 
           ) : (
 

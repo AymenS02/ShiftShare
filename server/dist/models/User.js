@@ -26,6 +26,12 @@ const UserSchema = new Schema({
         enum: ["employee", "manager"],
         default: "employee",
     },
+    companyId: {
+        type: Schema.Types.ObjectId,
+        ref: "Company",
+        default: null,
+        index: true,
+    },
 }, {
     timestamps: true,
 });

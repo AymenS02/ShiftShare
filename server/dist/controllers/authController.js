@@ -2,8 +2,8 @@ import { loginUser, registerUser } from "../services/authService.js";
 import User from "../models/User.js";
 export async function register(req, res) {
     try {
-        const { firstName, lastName, email, password } = req.body;
-        const result = await registerUser(firstName, lastName, email, password);
+        const { firstName, lastName, email, password, role } = req.body;
+        const result = await registerUser(firstName, lastName, email, password, role);
         res.status(201).json(result);
     }
     catch (error) {
@@ -53,6 +53,11 @@ export async function logout(req, res) {
 }
 export async function getProfile(req, res) {
     try {
+        if (!req.user?.id) {
+            return res.status(401).json({
+                message: "Unauthorized",
+            });
+        }
         const user = await User.findById(req.user.id)
             .select("-password");
         if (!user) {

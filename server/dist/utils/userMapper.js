@@ -5,5 +5,6 @@ export function toUserResponse(user) {
         lastName: user.lastName,
         email: user.email,
         role: user.role,
+        companyId: user.companyId ?? null,
     };
 }

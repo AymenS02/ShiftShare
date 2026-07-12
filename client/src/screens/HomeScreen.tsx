@@ -1,14 +1,17 @@
 import { View, Text, StyleSheet } from "react-native";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 export default function HomeScreen() {
+  const { user } = useContext(AuthContext);
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
-        Welcome to ShiftShare
+        Welcome, {user?.firstName ?? "Employee"}
       </Text>
 
       <Text style={styles.subtitle}>
-        Manage your shifts, requests, and schedule easily.
+        Role: {user?.role ?? "employee"}
       </Text>
 
       <View style={styles.card}>

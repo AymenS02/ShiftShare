@@ -6,6 +6,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: "employee" | "manager";
+  companyId?: mongoose.Types.ObjectId | null;
   createdAt: Date;
 }
 
@@ -41,6 +42,13 @@ const UserSchema = new Schema<IUser>(
       type: String,
       enum: ["employee", "manager"],
       default: "employee",
+    },
+
+    companyId: {
+      type: Schema.Types.ObjectId,
+      ref: "Company",
+      default: null,
+      index: true,
     },
   },
   {

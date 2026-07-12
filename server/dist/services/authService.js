@@ -2,7 +2,7 @@ import User from "../models/User.js";
 import { hashPassword, comparePassword } from "../utils/hashPassword.js";
 import { generateToken } from "../utils/jwt.js";
 import { toUserResponse } from "../utils/userMapper.js";
-export async function registerUser(firstName, lastName, email, password) {
+export async function registerUser(firstName, lastName, email, password, role = "employee") {
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -16,6 +16,7 @@ export async function registerUser(firstName, lastName, email, password) {
         lastName,
         email,
         password: hashedPassword,
+        role,
     });
     // Create JWT
     const token = generateToken(user._id.toString());
@@ -40,7 +41,7 @@ export async function loginUser(email, password) {
     // Generate token
     const token = generateToken(user._id.toString());
     return {
-        user,
+        user: toUserResponse(user),
         token,
     };
 }

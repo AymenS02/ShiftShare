@@ -8,7 +8,8 @@ export async function registerUser(
   firstName: string,
   lastName: string,
   email: string,
-  password: string
+  password: string,
+  role: "employee" | "manager" = "employee"
 ) {
 
   // Check if user already exists
@@ -29,6 +30,7 @@ export async function registerUser(
     lastName,
     email,
     password: hashedPassword,
+    role,
   });
 
 
@@ -82,7 +84,7 @@ export async function loginUser(
 
 
   return {
-    user,
+    user: toUserResponse(user),
     token,
   };
 }

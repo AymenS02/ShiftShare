@@ -1,16 +1,10 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import { verifyToken } from "../utils/jwt.js";
+import User from "../models/User.js";
+import { AuthenticatedRequest } from "../types/auth.js";
 
-
-export interface AuthRequest extends Request {
-  user?: {
-    id: string;
-  };
-}
-
-
-export function authMiddleware(
-  req: AuthRequest,
+export async function authMiddleware(
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ) {
@@ -37,13 +31,22 @@ export function authMiddleware(
     }
 
 
-    const decoded = verifyToken(token) as {
-      id: string;
-    };
+    const decoded = verifyToken(token) as { id: string };
 
+    const user = await User.findById(decoded.id).select(
+      "_id role companyId"
+    );
+
+    if (!user) {
+      return res.status(401).json({
+        message: "User not found",
+      });
+    }
 
     req.user = {
-      id: decoded.id,
+      id: user._id.toString(),
+      role: user.role,
+      companyId: user.companyId ? user.companyId.toString() : null,
     };
 
 

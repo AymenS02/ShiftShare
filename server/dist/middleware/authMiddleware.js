@@ -1,5 +1,6 @@
 import { verifyToken } from "../utils/jwt.js";
-export function authMiddleware(req, res, next) {
+import User from "../models/User.js";
+export async function authMiddleware(req, res, next) {
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
@@ -14,8 +15,16 @@ export function authMiddleware(req, res, next) {
             });
         }
         const decoded = verifyToken(token);
+        const user = await User.findById(decoded.id).select("_id role companyId");
+        if (!user) {
+            return res.status(401).json({
+                message: "User not found",
+            });
+        }
         req.user = {
-            id: decoded.id,
+            id: user._id.toString(),
+            role: user.role,
+            companyId: user.companyId ? user.companyId.toString() : null,
         };
         next();
     }

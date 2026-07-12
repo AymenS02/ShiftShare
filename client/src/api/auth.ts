@@ -1,4 +1,5 @@
 import { apiClient } from "./client";
+import { CurrentUser } from "../types";
 
 
 export async function register(
@@ -47,6 +48,6 @@ export async function getCurrentUser(){
 
   return await apiClient("/auth/profile", {
     method:"GET",
-  });
+  }) as Promise<CurrentUser>;
 
 }
