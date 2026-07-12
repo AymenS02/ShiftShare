@@ -7,6 +7,7 @@ import BottomTabs from "./BottomTabs";
 
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
+import CreateCompanyScreen from "../screens/CreateCompanyScreen";
 
 
 const Stack = createNativeStackNavigator();
@@ -58,6 +59,11 @@ export default function AppNavigator() {
               <Stack.Screen
                 name="RegisterScreen"
                 component={RegisterScreen}
+              />
+
+              <Stack.Screen
+                name="CreateCompanyScreen"
+                component={CreateCompanyScreen}
               />
             </>
 

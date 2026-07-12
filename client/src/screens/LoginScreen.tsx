@@ -32,10 +32,10 @@ export default function LoginScreen() {
     
     if (!email || !password) {
       
-      Alert.alert(
-        "Error",
-        "Please fill all fields"
-      );
+      if (!email || !password || !companyCode) {
+        Alert.alert("Error", "Please enter your email, password, and company code");
+        return;
+      }
 
       return;
 
@@ -46,16 +46,29 @@ export default function LoginScreen() {
 
       const response = await login(
         email,
-        password
+        password,
+        companyCode
       );
 
 
       await loginUser(
-        response.token
+        response.token,
+        response.user
       );
 
 
-    } catch (error: any) {
+      if (response.user.companyId) {
+
+        navigation.navigate("Main");
+
+      } else {
+
+        navigation.navigate("CreateCompanyScreen");
+
+      }
+
+
+    } catch(error:any) {
 
       Alert.alert(
         "Login Failed",

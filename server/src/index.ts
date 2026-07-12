@@ -7,6 +7,7 @@ import cors from "cors";
 
 import { connectDB } from "./config/database.js";
 import authRoutes from "./routes/authRoutes.js";
+import companyRoutes from "./routes/companyRoutes.js";
 
 const app = express();
 
@@ -20,6 +21,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+
+app.use("/api/company", companyRoutes);
 
 const PORT = Number(process.env.PORT) || 5000;
 
