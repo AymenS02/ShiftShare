@@ -4,13 +4,14 @@ import User from "../models/User.js";
 
 export async function register(req: Request, res: Response) {
   try {
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password, role } = req.body;
 
     const result = await registerUser(
       firstName,
       lastName,
       email,
-      password
+      password,
+      role
     );
 
     res.status(201).json(result);
@@ -68,9 +69,14 @@ export async function logout(req: Request, res: Response) {
   }
 }
 
-export async function getProfile(req:any, res:any){
+export async function getProfile(req: Request & { user?: { id: string } }, res: Response){
 
   try {
+    if (!req.user?.id) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
 
     const user = await User.findById(req.user.id)
       .select("-password");

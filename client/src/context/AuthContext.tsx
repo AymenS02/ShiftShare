@@ -10,21 +10,27 @@ import {
   saveToken,
   deleteToken,
 } from "../storage/token";
+import { getCurrentUser } from "../api/auth";
+import { CurrentUser } from "../types";
 
 
 interface AuthContextType {
   token: string | null;
   isLoading: boolean;
+  user: CurrentUser | null;
   loginUser: (token: string) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 
 export const AuthContext = createContext<AuthContextType>({
   token: null,
   isLoading: true,
+  user: null,
   loginUser: async () => {},
   logout: async () => {},
+  refreshUser: async () => {},
 });
 
 
@@ -37,6 +43,7 @@ export function AuthProvider({
   const [token, setToken] = useState<string | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<CurrentUser | null>(null);
 
 
 
@@ -56,6 +63,8 @@ export function AuthProvider({
 
       if (storedToken) {
         setToken(storedToken);
+        const profile = await getCurrentUser();
+        setUser(profile);
       }
 
     } catch (error) {
@@ -77,6 +86,8 @@ export function AuthProvider({
     await saveToken(newToken);
 
     setToken(newToken);
+    const profile = await getCurrentUser();
+    setUser(profile);
 
   }
 
@@ -87,7 +98,17 @@ export function AuthProvider({
     await deleteToken();
 
     setToken(null);
+    setUser(null);
 
+  }
+
+  async function refreshUser() {
+    if (!token) {
+      setUser(null);
+      return;
+    }
+    const profile = await getCurrentUser();
+    setUser(profile);
   }
 
 
@@ -98,8 +119,10 @@ export function AuthProvider({
       value={{
         token,
         isLoading,
+        user,
         loginUser,
         logout,
+        refreshUser,
       }}
     >
 

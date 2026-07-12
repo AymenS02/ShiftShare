@@ -8,30 +8,11 @@ import {
 import { useContext } from "react";
 
 import { AuthContext } from "../context/AuthContext";
-
-import React, {
-  useEffect,
-  useState
-} from "react";
-
-import {
-  getCurrentUser
-} from "../api/auth";
+import React from "react";
 
 export default function ProfileScreen() {
 
-  const { logout } = useContext(AuthContext);
-
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const userData = await getCurrentUser();
-      setUser(userData);
-    };
-
-    fetchUser();
-  }, []);
+  const { logout, user } = useContext(AuthContext);
 
   async function handleLogout() {
 
@@ -46,7 +27,7 @@ export default function ProfileScreen() {
 
       <View style={styles.avatar}>
         <Text style={styles.avatarText}>
-          A
+          {user?.firstName?.charAt(0) ?? "U"}
         </Text>
       </View>
 
