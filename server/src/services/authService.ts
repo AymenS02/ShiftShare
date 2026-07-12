@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import { hashPassword, comparePassword } from "../utils/hashPassword.js";
 import { generateToken } from "../utils/jwt.js";
+import { toUserResponse } from "../utils/userMapper.js";
 
 
 export async function registerUser(
@@ -38,8 +39,8 @@ export async function registerUser(
 
 
   return {
-    user,
-    token,
+      user: toUserResponse(user),
+      token,
   };
 }
 

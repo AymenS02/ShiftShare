@@ -1,142 +1,166 @@
-import { View, Text, TextInput, Pressable, Alert, StyleSheet } from "react-native";
-import { useState } from "react";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import React, {
+  useState,
+  useContext,
+} from "react";
 
-type RootStackParamList = {
-  LoginScreen: undefined;
-  RegisterScreen: undefined;
-  Main: undefined;
-};
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  Alert,
+} from "react-native";
 
-type LoginScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  "LoginScreen"
->;
+import { login } from "../api/auth";
 
-type Props = {
-  navigation: LoginScreenNavigationProp;
-};
+import { AuthContext } from "../context/AuthContext";
 
-export default function LoginScreen({ navigation }: Props) {
+import { useNavigation } from "@react-navigation/native";
+
+export default function LoginScreen() {
+
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [companyCode, setCompanyCode] = useState("");
 
-  function handleLogin() {
-    if (!email || !password || !companyCode) {
-      Alert.alert("Error", "Please enter your email, password, and company code");
+  const [password, setPassword] = useState("");
+
+  const { loginUser } = useContext(AuthContext);
+
+  const navigation = useNavigation();
+
+  async function handleLogin() {
+    
+    if (!email || !password) {
+      
+      Alert.alert(
+        "Error",
+        "Please fill all fields"
+      );
+
       return;
+
     }
 
-    // TODO: Replace this with real authentication
-    console.log({
-      email,
-      password,
-      companyCode,
-    });
 
-    // Go to the app after login
-    navigation.navigate("Main");
+    try {
+
+      const response = await login(
+        email,
+        password
+      );
+
+
+      await loginUser(
+        response.token
+      );
+
+
+    } catch (error: any) {
+
+      Alert.alert(
+        "Login Failed",
+        error.message
+      );
+
+    }
+
   }
 
+
+
   return (
+
     <View style={styles.container}>
+
+
       <Text style={styles.title}>
-        Login to ShiftShare
+        Login
       </Text>
 
+
       <TextInput
+        style={styles.input}
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
-        keyboardType="email-address"
-        style={styles.input}
       />
 
+
       <TextInput
+        style={styles.input}
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        style={styles.input}
       />
 
-      <TextInput
-        placeholder="Company Code"
-        value={companyCode}
-        onChangeText={setCompanyCode}
-        style={styles.input}
-      />
 
       <Pressable
-        onPress={handleLogin}
         style={styles.button}
+        onPress={handleLogin}
       >
+
         <Text style={styles.buttonText}>
           Login
         </Text>
+
       </Pressable>
 
-      <Text style={styles.forgot}>
-        Forgot Password?
-      </Text>
-
-      <Text
-        onPress={() => navigation.navigate("RegisterScreen")}
-        style={styles.link}
+      <Pressable
+        onPress={() => navigation.navigate("RegisterScreen" as never)}
       >
-        Don't have an account? Sign Up
-      </Text>
+        <Text style={styles.registerText}>
+          Don't have an account? Register
+        </Text>
+      </Pressable>
+
     </View>
+
   );
+
 }
 
+
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
+
+  container:{
+    flex:1,
+    justifyContent:"center",
+    padding:20,
   },
 
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
+  title:{
+    fontSize:32,
+    fontWeight:"700",
+    marginBottom:30,
   },
 
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    paddingHorizontal: 10,
-    paddingVertical: 12,
-    marginVertical: 8,
-    width: "80%",
-    borderRadius: 5,
+  input:{
+    borderWidth:1,
+    borderColor:"#ccc",
+    padding:12,
+    borderRadius:8,
+    marginBottom:15,
   },
 
-  button: {
-    backgroundColor: "black",
-    padding: 12,
-    width: "80%",
-    alignItems: "center",
-    borderRadius: 5,
-    marginTop: 15,
+  button:{
+    backgroundColor:"#111",
+    padding:15,
+    borderRadius:8,
+    alignItems:"center",
   },
 
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
+  buttonText:{
+    color:"#fff",
+    fontWeight:"700",
   },
 
-  forgot: {
-    color: "blue",
-    marginTop: 15,
+  registerText:{
+    marginTop:20,
+    textAlign:"center",
+    color:"#444",
   },
 
-  link: {
-    color: "blue",
-    marginTop: 15,
-  },
 });

@@ -1,27 +1,73 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { NavigationContainer } from "@react-navigation/native";
+
 import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
 import BottomTabs from "./BottomTabs";
 
+import { AuthContext } from "../context/AuthContext";
+import { useContext } from "react";
+
+
 const Stack = createNativeStackNavigator();
 
+
 export default function AppNavigator() {
+
+  const {
+    token,
+    isLoading
+  } = useContext(AuthContext);
+
+
+
+  if (isLoading) {
+    return null;
+  }
+
+
+
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen 
-        name="LoginScreen" 
-        component={LoginScreen}
-      />
 
-      <Stack.Screen
-        name="RegisterScreen"
-        component={RegisterScreen}
-      />
+    <NavigationContainer>
 
-      <Stack.Screen
-        name="Main"
-        component={BottomTabs}
-      />
-    </Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+
+        {
+          token ? (
+
+            // User is logged in
+            <Stack.Screen
+              name="Main"
+              component={BottomTabs}
+            />
+
+          ) : (
+
+            // User is not logged in
+            <>
+              <Stack.Screen
+                name="LoginScreen"
+                component={LoginScreen}
+              />
+
+              <Stack.Screen
+                name="RegisterScreen"
+                component={RegisterScreen}
+              />
+            </>
+
+          )
+        }
+
+
+      </Stack.Navigator>
+
+    </NavigationContainer>
+
   );
 }

@@ -1,163 +1,194 @@
-import { View, Text, TextInput, Pressable, Alert, StyleSheet } from "react-native";
-import { useState } from "react";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import React, {
+  useState,
+} from "react";
 
-type RootStackParamList = {
-  LoginScreen: undefined;
-  RegisterScreen: undefined;
-  Main: undefined;
-};
 
-type RegisterScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  "RegisterScreen"
->;
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  Alert,
+} from "react-native";
 
-type Props = {
-  navigation: RegisterScreenNavigationProp;
-};
 
-export default function RegisterScreen({ navigation }: Props) {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+import { register } from "../api/auth";
 
-  function handleRegister() {
-    if (
-      !firstName ||
-      !lastName ||
-      !email ||
-      !password ||
-      !confirmPassword
-    ) {
-      Alert.alert("Error", "Please fill in all fields");
-      return;
-    }
 
-    if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
-      return;
-    }
 
-    // TODO: Connect to backend/auth here
-    console.log({
-      firstName,
-      lastName,
-      email,
-      password,
-    });
+export default function RegisterScreen() {
 
-    Alert.alert("Success", "Account created!");
 
-    navigation.navigate("Main");
-  }
+const [firstName,setFirstName] = useState("");
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
-        Register with Shift Share
-      </Text>
+const [lastName,setLastName] = useState("");
 
-      <TextInput
-        placeholder="First name"
-        value={firstName}
-        onChangeText={setFirstName}
-        style={styles.input}
-      />
+const [email,setEmail] = useState("");
 
-      <TextInput
-        placeholder="Last name"
-        value={lastName}
-        onChangeText={setLastName}
-        style={styles.input}
-      />
+const [password,setPassword] = useState("");
 
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
-        style={styles.input}
-      />
 
-      <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.input}
-      />
 
-      <TextInput
-        placeholder="Confirm password"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-        style={styles.input}
-      />
+async function handleRegister(){
 
-      <Pressable
-        onPress={handleRegister}
-        style={styles.button}
-      >
-        <Text style={styles.buttonText}>
-          Create Account
-        </Text>
-      </Pressable>
 
-      <Text
-        onPress={() => navigation.navigate("LoginScreen")}
-        style={styles.link}
-      >
-        Already have an account? Login
-      </Text>
-    </View>
-  );
+if(
+!firstName ||
+!lastName ||
+!email ||
+!password
+){
+
+Alert.alert(
+"Error",
+"Please fill all fields"
+);
+
+return;
+
 }
 
+
+
+try {
+
+
+await register(
+firstName,
+lastName,
+email,
+password,
+"employee"
+);
+
+
+
+Alert.alert(
+"Success",
+"Account created"
+);
+
+
+
+}
+catch(error:any){
+
+
+Alert.alert(
+"Register Failed",
+error.message
+);
+
+
+}
+
+
+}
+
+
+
+return (
+
+<View style={styles.container}>
+
+
+<Text style={styles.title}>
+Register
+</Text>
+
+
+
+<TextInput
+style={styles.input}
+placeholder="First Name"
+value={firstName}
+onChangeText={setFirstName}
+/>
+
+
+
+<TextInput
+style={styles.input}
+placeholder="Last Name"
+value={lastName}
+onChangeText={setLastName}
+/>
+
+
+
+<TextInput
+style={styles.input}
+placeholder="Email"
+value={email}
+onChangeText={setEmail}
+autoCapitalize="none"
+/>
+
+
+
+<TextInput
+style={styles.input}
+placeholder="Password"
+value={password}
+onChangeText={setPassword}
+secureTextEntry
+/>
+
+
+
+<Pressable
+style={styles.button}
+onPress={handleRegister}
+>
+
+<Text style={styles.buttonText}>
+Create Account
+</Text>
+
+</Pressable>
+
+
+</View>
+
+);
+
+}
+
+
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
 
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
+container:{
+flex:1,
+justifyContent:"center",
+padding:20,
+},
 
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    paddingHorizontal: 10,
-    paddingVertical: 12,
-    marginVertical: 8,
-    width: "80%",
-    borderRadius: 5,
-  },
+title:{
+fontSize:32,
+fontWeight:"700",
+marginBottom:30,
+},
 
-  button: {
-    backgroundColor: "black",
-    padding: 12,
-    width: "80%",
-    alignItems: "center",
-    borderRadius: 5,
-    marginTop: 15,
-  },
+input:{
+borderWidth:1,
+borderColor:"#ccc",
+padding:12,
+borderRadius:8,
+marginBottom:15,
+},
 
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
+button:{
+backgroundColor:"#111",
+padding:15,
+borderRadius:8,
+alignItems:"center",
+},
 
-  link: {
-    color: "blue",
-    marginTop: 15,
-  },
+buttonText:{
+color:"#fff",
+fontWeight:"700",
+},
+
 });
