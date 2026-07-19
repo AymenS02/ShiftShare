@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ICompany extends Document {
   name: string;
-  owner: mongoose.Types.ObjectId;
+  createdBy: mongoose.Types.ObjectId;
   companyCode: string;
   createdAt: Date;
 }
@@ -14,7 +14,7 @@ const CompanySchema = new Schema<ICompany>(
       required: true,
       trim: true,
     },
-    owner: {
+    createdBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,

@@ -10,10 +10,8 @@ export async function apiClient(
 
   const token = await getToken();
 
-
   const headers = {
     "Content-Type": "application/json",
-
     ...(token && {
       Authorization: `Bearer ${token}`,
     }),

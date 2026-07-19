@@ -2,15 +2,19 @@ import { apiClient } from "./client";
 
 
 export async function createCompany(
-  name: string
+
+  name: string,
+  companyCode: string
+
 ) {
   return await apiClient(
-    "/company",
+    "/company/create",
     {
       method: "POST",
 
       body: JSON.stringify({
         name,
+        companyCode
       }),
     }
   );

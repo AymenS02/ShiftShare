@@ -4,7 +4,7 @@ import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
-router.post("/create", authMiddleware, createCompanyController);
+router.post("/create", createCompanyController);
 
 router.get("/my-company", authMiddleware, getMyCompanyController);
 

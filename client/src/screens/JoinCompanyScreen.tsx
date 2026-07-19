@@ -1,7 +1,7 @@
 import React, {
   useState,
-  useContext,
 } from "react";
+
 
 import {
   View,
@@ -12,51 +12,39 @@ import {
   StyleSheet,
 } from "react-native";
 
+
 import {
   useNavigation,
 } from "@react-navigation/native";
 
-import {
-  AuthContext,
-} from "../context/AuthContext";
 
 import {
-  createCompany,
+  joinCompany,
 } from "../api/company";
 
 
 
-export default function CreateCompanyScreen() {
+export default function JoinCompanyScreen(){
 
-
-  const [name,setName] =
-    useState("");
 
   const [companyCode,setCompanyCode] =
     useState("");
-
 
 
   const navigation =
     useNavigation();
 
 
-  const {
-    user,
-    membership,
-  } = useContext(AuthContext);
 
 
+  async function handleJoinCompany(){
 
 
-  async function handleCreateCompany(){
-
-
-    if(!name || !companyCode){
+    if(!companyCode){
 
       Alert.alert(
         "Error",
-        "Please fill all fields"
+        "Enter a company code"
       );
 
       return;
@@ -68,9 +56,7 @@ export default function CreateCompanyScreen() {
     try{
 
 
-      const response =
-      await createCompany(
-        name,
+      await joinCompany(
         companyCode
       );
 
@@ -78,7 +64,7 @@ export default function CreateCompanyScreen() {
 
       Alert.alert(
         "Success",
-        "Company created!"
+        "Joined company!"
       );
 
 
@@ -86,7 +72,6 @@ export default function CreateCompanyScreen() {
       navigation.navigate(
         "Main" as never
       );
-
 
 
     }
@@ -114,27 +99,14 @@ export default function CreateCompanyScreen() {
 
 
       <Text style={styles.title}>
-        Create Your Company
+        Join Company
       </Text>
+
 
 
       <Text style={styles.subtitle}>
-        Create a company for your employees to join
+        Enter the code provided by your manager
       </Text>
-
-
-
-      <TextInput
-
-        placeholder="Company Name"
-
-        value={name}
-
-        onChangeText={setName}
-
-        style={styles.input}
-
-      />
 
 
 
@@ -158,17 +130,16 @@ export default function CreateCompanyScreen() {
 
         style={styles.button}
 
-        onPress={handleCreateCompany}
+        onPress={handleJoinCompany}
 
       >
 
         <Text style={styles.buttonText}>
-          Create Company
+          Join Company
         </Text>
 
 
       </Pressable>
-
 
 
     </View>

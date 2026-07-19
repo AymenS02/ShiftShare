@@ -5,27 +5,40 @@ import React, {
   ReactNode,
 } from "react";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import {
   getToken,
   saveToken,
   deleteToken,
 } from "../storage/token";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-import {
-  createCompany as createCompanyAPI,
-} from "../api/company";
 
 
 interface User {
+
   id: string;
+
   firstName: string;
+
   lastName: string;
+
   email: string;
-  companyId?: string | null;
-  role?: "employee" | "manager";
+
+  role: "employee" | "manager";
+
 }
+
+
+
+interface Membership {
+
+  companyId: string;
+
+  role: "employee" | "manager";
+
+}
+
 
 
 
@@ -35,17 +48,15 @@ interface AuthContextType {
 
   user: User | null;
 
+  membership: Membership | null;
+
   isLoading: boolean;
 
 
   loginUser: (
     token: string,
-    user: User
-  ) => Promise<void>;
-
-
-  createCompany: (
-    name: string
+    user: User,
+    membership: Membership | null
   ) => Promise<void>;
 
 
@@ -55,72 +66,103 @@ interface AuthContextType {
 
 
 
-export const AuthContext = createContext<AuthContextType>({
 
-  token: null,
+export const AuthContext =
+createContext<AuthContextType>({
 
-  user: null,
+  token:null,
 
-  isLoading: true,
+  user:null,
+
+  membership:null,
+
+  isLoading:true,
 
 
-  loginUser: async () => {},
+  loginUser: async()=>{},
 
-  createCompany: async () => {},
-
-  logout: async () => {},
+  logout:async()=>{},
 
 });
 
 
 
+
+
+
 export function AuthProvider({
   children,
-}: {
-  children: ReactNode;
+}:{
+  children:ReactNode;
 }) {
 
 
-  const [token, setToken] =
-    useState<string | null>(null);
 
-
-  const [user, setUser] =
-    useState<User | null>(null);
-
-
-
-  const [isLoading, setIsLoading] =
-    useState(true);
+  const [token,setToken]
+  =
+  useState<string | null>(null);
 
 
 
+  const [user,setUser]
+  =
+  useState<User | null>(null);
 
-  useEffect(() => {
+
+
+  const [membership,setMembership]
+  =
+  useState<Membership | null>(null);
+
+
+
+  const [isLoading,setIsLoading]
+  =
+  useState(true);
+
+
+
+
+
+  useEffect(()=>{
 
     loadAuth();
 
-  }, []);
+  },[]);
 
 
 
 
-  async function loadAuth() {
 
-    try {
+
+
+  async function loadAuth(){
+
+
+    try{
+
 
       const storedToken =
-        await getToken();
+      await getToken();
+
 
 
       const storedUser =
-        await AsyncStorage.getItem(
-          "user"
-        );
+      await AsyncStorage.getItem(
+        "user"
+      );
 
 
 
-      if (storedToken) {
+      const storedMembership =
+      await AsyncStorage.getItem(
+        "membership"
+      );
+
+
+
+
+      if(storedToken){
 
         setToken(storedToken);
 
@@ -128,7 +170,8 @@ export function AuthProvider({
 
 
 
-      if (storedUser) {
+
+      if(storedUser){
 
         setUser(
           JSON.parse(storedUser)
@@ -137,20 +180,32 @@ export function AuthProvider({
       }
 
 
-    } catch(error) {
 
+
+
+      if(storedMembership){
+
+        setMembership(
+          JSON.parse(storedMembership)
+        );
+
+      }
+
+
+
+
+    }
+    catch(error){
 
       console.log(
-        "Auth loading error:",
+        "Auth loading error",
         error
       );
 
-
-    } finally {
-
+    }
+    finally{
 
       setIsLoading(false);
-
 
     }
 
@@ -160,15 +215,22 @@ export function AuthProvider({
 
 
 
+
+
+
+
   async function loginUser(
     newToken:string,
-    newUser:User
-  ) {
+    newUser:User,
+    newMembership:Membership | null
+  ){
+
 
 
     await saveToken(
       newToken
     );
+
 
 
     await AsyncStorage.setItem(
@@ -178,47 +240,18 @@ export function AuthProvider({
 
 
 
+    await AsyncStorage.setItem(
+      "membership",
+      JSON.stringify(newMembership)
+    );
+
+
+
     setToken(newToken);
 
     setUser(newUser);
 
-
-  }
-
-
-
-
-
-  async function createCompany(
-    name:string
-  ) {
-
-
-    const response =
-      await createCompanyAPI(
-        name
-      );
-
-
-
-    const updatedUser = {
-
-      ...user!,
-
-      companyId:
-        response.company._id,
-
-    };
-
-
-
-    await AsyncStorage.setItem(
-      "user",
-      JSON.stringify(updatedUser)
-    );
-
-
-    setUser(updatedUser);
+    setMembership(newMembership);
 
 
   }
@@ -228,10 +261,14 @@ export function AuthProvider({
 
 
 
-  async function logout() {
+
+
+
+  async function logout(){
 
 
     await deleteToken();
+
 
 
     await AsyncStorage.removeItem(
@@ -239,12 +276,23 @@ export function AuthProvider({
     );
 
 
+
+    await AsyncStorage.removeItem(
+      "membership"
+    );
+
+
+
     setToken(null);
 
     setUser(null);
 
+    setMembership(null);
+
 
   }
+
+
 
 
 
@@ -260,11 +308,11 @@ export function AuthProvider({
 
         user,
 
+        membership,
+
         isLoading,
 
         loginUser,
-
-        createCompany,
 
         logout,
 

@@ -11,6 +11,9 @@ export async function createCompanyController(
   req: Request,
   res: Response
 ) {
+
+    console.log("Request body:", req.body); // Log the request body for debugging
+
   try {
 
     const userId = req.user?.id;
@@ -29,8 +32,8 @@ export async function createCompanyController(
 
     const company =
       await createCompany(
-        userId,
         name,
+        userId,
         companyCode // Include companyCode in the createCompany call
       );
 
